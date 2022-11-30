@@ -71,4 +71,70 @@ public class boardDAO extends JDBConnect{
 		return bbs;
 		
 	}
+	
+		public int insertWrite(boardDTO dto) {
+		
+		int result = 0;
+		String query = "insert into board (num,title,content,id,visitcount)"
+				+ " values(seq_board_num.nextval,?,?,?,0)";
+		
+		try {
+			
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, dto.getTitle());
+			psmt.setString(2, dto.getContent());
+			psmt.setString(3, dto.getId());
+			
+			result = psmt.executeUpdate();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+			
+		return result;
+	}
+	
+		public boardDTO selectView(String num)	{  //쿼리문 바로작성하지말고 찍어보고옮기기
+		
+		String query = "select b.*, m.name"
+				+ " from member m inner join board b"
+				+ " on m.id = b.id"
+				+ " where num = ?";
+		
+		boardDTO dto = new boardDTO();
+		
+		try {
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, num);
+			
+			rs = psmt.executeQuery();
+
+			if(rs.next()) {
+				dto.setNum(rs.getString(1));
+				dto.setTitle(rs.getString(2));
+				dto.setContent(rs.getString("content"));
+				dto.setPostdate(rs.getDate("postdate"));
+				dto.setId(rs.getString("id"));
+				dto.setVisitcount(rs.getString(6));
+				dto.setName(rs.getString("name"));
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return dto;
+	}
+	public void updateVisitCount(String num) {
+		
+		String query = "update board set"
+				+ " visitcount = visitcount + 1"
+				+ " where num = ?";
+		
+		try {
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, num);
+			psmt.executeUpdate();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

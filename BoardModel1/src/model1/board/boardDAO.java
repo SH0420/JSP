@@ -114,7 +114,7 @@ public class boardDAO extends JDBConnect{
 				dto.setContent(rs.getString("content"));
 				dto.setPostdate(rs.getDate("postdate"));
 				dto.setId(rs.getString("id"));
-				dto.setVisitcount(rs.getString(6));
+				dto.setVisitcount(rs.getString(6));                                                  
 				dto.setName(rs.getString("name"));
 			}
 		}catch(Exception e) {
@@ -136,5 +136,44 @@ public class boardDAO extends JDBConnect{
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	public int updateEdit(boardDTO dto) {
+		int result =0;
+		try {
+			String query = "UPDATE board SET"
+						 + " title=?, content=? "
+						 + " WHERE num=?";
+			
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, dto.getTitle());
+			psmt.setString(2, dto.getContent());
+			psmt.setString(3, dto.getNum());
+			
+			//쿼리문 실행
+			result = psmt.executeUpdate();
+		}
+		catch(Exception e) {
+			System.out.println("게시물 수정 중 예외 발생");
+			e.printStackTrace();	
+		}
+		return result; //결과 반환
+	}
+	
+	public int deletePost(boardDTO dto) {
+		
+		int result = 0;
+		
+		String query = "delete from board where num = ?";
+		
+		try {	
+			psmt = con.prepareStatement(query);
+			psmt.setString(1,  dto.getNum());
+			result = psmt.executeUpdate();
+		}
+		catch(Exception e) {
+			e.printStackTrace();	
+		}
+		
+		return result;
 	}
 }

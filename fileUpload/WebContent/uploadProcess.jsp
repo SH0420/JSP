@@ -25,6 +25,7 @@ try {
 	//3. 파일명 변경
 	File oldFile = new File(saveDirectory + File.separator + fileName);
 	File newFile = new File(saveDirectory + File.separator + newFileName);
+	oldFile.renameTo(newFile); 
 	
 	//4. 다른 폼값 받기
 	String name =mr.getParameter("name");

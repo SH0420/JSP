@@ -84,4 +84,90 @@ public class MVCBoardDAO extends DBConnPool{ //커넥션 풀 상속
 		}
 		return board; //목록반환
 	}		
+	//Write작성후 12/8
+	//게시글 데이터를 받아 DB에 추가합니다(파일 업로드지원).
+	public int insertWrite(MVCBoardDTO dto) {
+		int result = 0;
+		try {
+			String query = "INSERT INTO mvcboard ( "
+					 	 + " idx, name, title, content, ofile, sfile, pass) "
+					 	 + " VALUES ( "
+					 	 + " seq_board_num.NEXTVAL,?,?,?,?,?,?)";
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, dto.getName());
+			psmt.setString(2, dto.getTitle());
+			psmt.setString(3, dto.getContent());
+			psmt.setString(4, dto.getOfile());
+			psmt.setString(5, dto.getSfile());
+			psmt.setString(6, dto.getPass());
+			result = psmt.executeUpdate();					
+		}
+		catch (Exception e) {
+			System.out.println("게시물 입력 중 예외 발생");
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	//주어진 일련번호에 해당하는 게시물의 조회수를 1증가시킨다.
+	public void updateVisitCount(String idx) {
+		String query = "UPDATE mvcboard SET "
+					 + " visitcount=visitcount+1 "
+					 + " WHERE idx=?";
+		
+		try {
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, idx);
+			psmt.executeQuery();
+		}
+		catch (Exception e) {
+			System.out.println("게시물 조회수 증가 중 예외 발생");
+			e.printStackTrace();
+		}
+	}
+	
+	public MVCBoardDTO selectView(String idx) {
+		MVCBoardDTO dto = new MVCBoardDTO();
+		String query = "SELECT * FROM mvcboard where idx = ?";
+		
+		try {
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, idx);
+			rs = psmt.executeQuery();
+			
+			if(rs.next()) {
+				dto.setIdx(rs.getString(1));
+				dto.setName(rs.getString(2));
+				dto.setTitle(rs.getString(3));
+				dto.setContent(rs.getString(4));
+				dto.setPostdate(rs.getDate(5));
+				dto.setOfile(rs.getString(6));
+				dto.setSfile(rs.getString(7));
+				dto.setDowncount(rs.getInt(8));
+				dto.setPass(rs.getString(9));
+				dto.setVisitcount(rs.getInt(10));
+			}
+			
+		}
+		catch (Exception e) {
+			System.out.println("게시물 상세보기 중 예외 발생");
+			e.printStackTrace();
+		}
+		
+		return dto;
+	}
+	
+	public void downCountPlus(int idx) {
+		String sql = "UPDATE mvcboard SET "
+				+ " downcount=downcount+1 "
+				+ " WHERE idx=? ";
+			try {
+				psmt =con.prepareStatement(sql);
+				psmt.setLong(1, idx);
+				psmt.executeUpdate();
+				}
+			catch (Exception e) {
+				
+			}
+	}
 }

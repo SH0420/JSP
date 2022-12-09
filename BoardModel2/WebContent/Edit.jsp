@@ -28,8 +28,9 @@
 </head>
 <h2>파일 첨부형 게시판 - 수정하기(Edit)</h2>
 <form name="writeFrm" method="post" enctype="multipart/form-data"
-	action="edit.do" onsubmit="return validateForm(this);">
-	<input type="hidden" name="idx" value="${ dto.idx }" />
+	action="edit.do" onsubmit="return validateForm(this);"> <!--폼 태그를 정의  -->
+	<input type="hidden" name="idx" value="${ dto.idx }" />  
+	<!--hidden타입입력상자로 일련번호,서버에저장된파일명, 원본파일명을 전달 -->
 	<input type="hidden" name="prevOfile" value="${ dto.ofile }" />
 	<input type="hidden" name="prevSfile" value="${ dto.sfile }" />
 	

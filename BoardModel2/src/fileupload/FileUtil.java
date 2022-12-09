@@ -78,4 +78,14 @@ public class FileUtil {
 			e.printStackTrace();
 		}
 	}
+	
+	//지정한 위치의 파일을 삭제해요
+	public static void deleteFile(HttpServletRequest req,String directory,String filename) {
+		
+		String sDirectory = req.getServletContext().getRealPath(directory); //파일이 저장된 디렉터리의 물리적 경로를 얻어옴
+		File file = new File(sDirectory + File.separator + filename); //경로와 파일명을 결합하여 파일 객체생성
+		if(file.exists()) {
+			file.delete();
+		}
+	}
 }

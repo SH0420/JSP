@@ -1,8 +1,10 @@
 package model2.mvcboard;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
 import common.DBConnPool;
 
 public class MVCBoardDAO extends DBConnPool{ //커넥션 풀 상속
@@ -170,4 +172,75 @@ public class MVCBoardDAO extends DBConnPool{ //커넥션 풀 상속
 				
 			}
 	}
+	//입력한 비밀번호가 지정한 일련번호의 게시물의 비밀번호와 일치하는지확인해요
+	public boolean confirmPassword(String pass, String idx) {
+		
+		boolean isCorr = true;
+		//비밀번호와 일련번호가 일치하는지 게시물의개수를 세어 비밀번호 일치여부확인해요
+		String query = "SELECT COUNT(*) FROM mvcboard WHERE pass=? AND idx=?";
+		try {
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, pass);
+			psmt.setString(2, idx);
+			rs = psmt.executeQuery();
+			rs.next();
+			if(rs.getInt(1) == 0 ) {//일치하는 게시물이 없다면(=실행결과 0이면) false를 반환,예외가 발생해도 false반환
+				isCorr = false;
+			}
+		}
+		catch (SQLException e) {
+			isCorr = false;
+			e.printStackTrace();
+		}
+		return isCorr;
+	}
+	
+	//지정한 일련번호의 게시물을 삭제합니다
+	public int deletePost(String idx) {
+		int result = 0;
+		
+		String query = "DELETE FROM mvcboard WHERE idx=?";
+		try {
+			
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, idx);
+			result = psmt.executeUpdate();//정상적으로  삭제되었으면 1을반환해요
+			
+		}
+		catch (SQLException e) {
+			System.out.println("게시물 삭제 중 예외 발생");
+			e.printStackTrace();
+		}
+		return result;
+	}
+	//게시글 데이터를 받아 DB에 저장되어 있던 내용을 갱신해요(파일 업로드 지원)
+	public int updatePost(MVCBoardDTO dto) {
+		
+		int result = 0;
+		
+		String query ="update mvcboard"
+				+" set title = ?, name = ?, content= ?, ofile= ?, sfile= ? "
+				+" where idx = ? and pass =?";
+				
+		try {
+			//쿼리문 준비
+			psmt = con.prepareStatement(query);
+			psmt.setString(1, dto.getTitle());
+			psmt.setString(2, dto.getName());
+			psmt.setString(3, dto.getContent());
+			psmt.setString(4, dto.getOfile());
+			psmt.setString(5, dto.getSfile());
+			psmt.setString(6, dto.getIdx());
+			psmt.setString(7, dto.getPass());
+			//쿼리문실행
+			result = psmt.executeUpdate();
+		
+		} catch (SQLException e) {
+			System.out.println("게시물 수정 중 예외 발생");
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
+	
 }
